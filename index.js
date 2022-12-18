@@ -1,15 +1,15 @@
-var bodyParser = require('body-parser')
-var express = require("express")
-var app = express()
-var router = require("./routes/routes")
+const express = require("express")
+const app = express()
+const cors = require('cors')
+const router = require("./routes/routes")
  
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
-// parse application/json
-app.use(bodyParser.json())
+app.use(cors())
+
+app.use(express.urlencoded({ extended: false }))
+app.use(express.json())
 
 app.use("/",router);
 
-app.listen(8686,() => {
+app.listen(3000,() => {
     console.log("Servidor rodando")
 });

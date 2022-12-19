@@ -1,5 +1,6 @@
 const knex = require("knex")
 const Email = require('../services/Email')
+const User = require("../models/User")
 
 class UserController{
 
@@ -21,16 +22,11 @@ class UserController{
       return res.status(400).send({erro: 'Email Inválido'})
     
     try {
-      const exist = await knex('users').select().where({email})
+      const exist = await User.checkEmail(email)
       if(exist)
         return res.status(400).send({erro: 'Email ja cadastrado'})
 
-      // await knex('users').insert({
-      //   user_email: email,
-      //   user_password: password,
-      //   user_name: name,
-      //   user_role: role
-      // })
+    
       return res.status(200).send({message: 'Usuário cadastrado com sucesso'})
     }catch(err){
       res.status(400).send({err})

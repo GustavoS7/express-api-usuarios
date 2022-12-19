@@ -1,5 +1,6 @@
 const express = require("express")
 const cors = require('cors')
+const knex = require('./database/connection')
 
 const app = express()
 const router = require("./routes/routes")

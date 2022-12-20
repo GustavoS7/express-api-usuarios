@@ -1,35 +1,35 @@
 const knex = require("knex")
-const Email = require('../services/Email')
+const Validacao = require('../services/Validacao')
 const User = require("../models/User")
 
 class UserController{
 
-  async indexedDB(req, res){}
+  async index(req, res){
+    const users = await User.findAll()
+    return res.status(200).send({users: users})
+  }
 
   async create (req, res){
     const { role, name, password, email } = req.body
-
-    if(!password)
-      return res.status(400).send({erro: 'Insira uma Senha!'})
-    if(!email) 
-      return res.status(400).send({erro: 'Insira um Email!'})
-    if(!name) 
-      return res.status(400).send({erro: 'Insira um Email!'})
-
-    const validacaoEmail = Email.ValidarEmail(email)
-
-    if(!validacaoEmail)
-      return res.status(400).send({erro: 'Email Inválido'})
+    const user = {
+      name,
+      email,
+      password, 
+      role
+    }
     
-    try {
-      const exist = await User.checkEmail(email)
-      if(exist)
-        return res.status(400).send({erro: 'Email ja cadastrado'})
+    const validacao = Validacao.ValidacaoGeral(user)
 
-    
-      return res.status(200).send({message: 'Usuário cadastrado com sucesso'})
-    }catch(err){
-      res.status(400).send({err})
+    if(validacao){
+      try {
+        const response = await User.create(user)
+        if(response)
+          return res.status(400).send(response)
+        return res.status(200).send({message: 'Usuário cadastrado com sucesso'})
+      }catch(err){
+        console.log(err)
+        return res.status(400).send({err: 'Erro no cadastro, tente novamente mais tarde'})
+      }
     }
   }
 }

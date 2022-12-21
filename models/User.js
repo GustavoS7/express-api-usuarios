@@ -14,6 +14,18 @@ class User{
     }
   }
 
+  async findById(id){
+    try{
+      const result = await knex('users').select(['id', 'user_email', 'user_name', 'user_role']).where({id: id})
+
+      if(result.length > 0)
+        return result[0]
+      return undefined
+    }catch(err){
+
+    }
+  }
+
   async create(user){
     const res = await this.checkEmail(user.email)
     const hash = await bcrypt.hash(user.password, 10)

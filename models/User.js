@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt')
 
 class User{
 
-  async findAll(){
+  async findAllUsers(){
     try{
       const users = await knex('users').select(["id", 'user_email', 'user_role', 'user_name'])
       console.log(users)
@@ -14,7 +14,7 @@ class User{
     }
   }
 
-  async findById(id){
+  async findUserById(id){
     try{
       const result = await knex('users').select(['id', 'user_email', 'user_name', 'user_role']).where({id: id})
 
@@ -55,6 +55,32 @@ class User{
     }catch(err){
       return {erro: 'Erro no cadastro, tente novamente mais tarde'}
       console.log(err)
+    }
+  }
+
+  async Update(user){
+    const result = await this.findById(user.id)
+
+    if(result){
+      const editUser = {}
+      if(user.email){
+        if(user.email != result.email){
+          const checkEmail = await this.checkEmail(user.email)
+          if(!checkEmail){
+            editUser.email = email
+          }
+        }
+      }
+      if(user.name){
+        if(user.email != result.email){
+          const checkEmail = await this.checkEmail(user.email)
+          if(!checkEmail){
+            editUser.email = email
+          }
+        }
+      }
+    }else{
+      return {status: false, err: 'O usúario não existe'}
     }
   }
 }

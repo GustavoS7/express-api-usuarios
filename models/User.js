@@ -22,9 +22,22 @@ class User{
         return result[0]
       return undefined
     }catch(err){
-
+      return {status: false, err: err.message}
     }
   }
+
+  async findUserByEmail(email){
+    try{
+      const result = await knex('users').select(['id', 'user_email', 'user_name', 'user_role']).where({email: email})
+
+      if(result.length > 0)
+        return result[0]
+      return undefined
+    }catch(err){
+      return {status: false, err: err.message}
+    }
+  }
+
 
   async create(user){
     const res = await this.checkEmail(user.email)

@@ -1,6 +1,7 @@
-const knex = require("knex")
 const Validacao = require('../services/Validacao')
 const User = require("../models/User")
+const UserController = require('../models/PasswordToken')
+const PasswordToken = require('../models/PasswordToken')
 
 class UserController{
 
@@ -72,6 +73,30 @@ class UserController{
       return res.status(200).send('Ok')
     }else{
       return res.status(400).send(result.err)
+    }
+  }
+
+  async recoverPassword(req, res){
+    const {email} = req.body
+
+    const result = await PasswordToken.create(email)
+
+    if(result.status){
+      return res.status(200).send('' + result.token)
+    }else{
+      return res.status(406).send(result.err)
+    }
+  }
+
+  async changePassword(req, res){
+    const {token, password} = req.body
+
+    const isToken = await PasswordToken.validate(token)
+
+    if(isToken){
+      
+    }else{
+      res.status(406).send('Token Inválido')
     }
   }
 }

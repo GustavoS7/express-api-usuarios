@@ -13,9 +13,9 @@ class UserController{
     const { id } = req.params
     const user = await User.findById(id)
     if(user){
-      res.status(200).json(user)
+      return res.status(200).json(user)
     }else{
-      res.status(404).json({err: 'Usuário não existe'})
+      return res.status(404).json({err: 'Usuário não existe'})
     }
   }
 
@@ -40,6 +40,38 @@ class UserController{
         console.log(err)
         return res.status(400).send({err: 'Erro no cadastro, tente novamente mais tarde'})
       }
+    }
+  }
+
+  async edit(req, res){
+    const {id, name, role, email} = req.body
+    const user = {
+      id,
+      email,
+      name,
+      role
+    }
+    const result = await User.update(user)
+    if(result.status !== undefined){
+      if(result.status){
+        return res.status(200).send({status: 'Ok'})
+      }else{
+        return res.status(400).json(result.err)
+      }
+    }else{
+      return res.status(406).send('Ocorreu um erro no servidor')
+    }
+  }
+
+  async remove(req, res){
+    const {id} = req.params
+
+    const result = await User.delete(id)
+
+    if(result.status){
+      return res.status(200).send('Ok')
+    }else{
+      return res.status(400).send(result.err)
     }
   }
 }

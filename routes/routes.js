@@ -8,6 +8,8 @@ const User = require("../models/User");
 router.get('/', HomeController.index);
 router.post('/user', UserController.create)
 router.get('/user', UserController.index)
-router.get('/user/:id', UserController.findUser)
+router.get('/user/:id', UserController.findUserById)
+router.put('/user', UserController.edit)
+router.delete('/user', UserController.remove)
 
 module.exports = router;

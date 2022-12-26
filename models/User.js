@@ -67,20 +67,42 @@ class User{
         if(user.email != result.email){
           const checkEmail = await this.checkEmail(user.email)
           if(!checkEmail){
-            editUser.email = email
+            editUser.email = user.email
+          }else{
+            return {status: false, err: 'E-mail já cadastrado'}
           }
         }
       }
       if(user.name){
-        if(user.email != result.email){
-          const checkEmail = await this.checkEmail(user.email)
-          if(!checkEmail){
-            editUser.email = email
-          }
-        }
+        editUser.email = user.name
       }
+      if(user.role){
+        editUser.role = user.role
+      }
+
+      try{
+        await knex('users').update(editUser).where({id: id})
+        return {status: true}
+      }catch(err){
+        return {status: false, err: err.message}
+      }
+
     }else{
       return {status: false, err: 'O usúario não existe'}
+    }
+  }
+
+  async delete(id){
+    const user = await this.findUserById(id)
+    if(user){
+      try{
+        await knex('users').delete().where({id: id})
+        return {status: true}
+      }catch(err){
+        return {status: false, err: err.message}
+      }
+    }else{
+      return {status: false, err: 'O usuário não exite'}
     }
   }
 }

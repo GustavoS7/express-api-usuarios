@@ -1,5 +1,6 @@
 const knex = require('../database/connection')
 const bcrypt = require('bcrypt')
+const PasswordToken = require('./PasswordToken')
 
 class User{
 
@@ -28,7 +29,7 @@ class User{
 
   async findUserByEmail(email){
     try{
-      const result = await knex('users').select(['id', 'user_email', 'user_name', 'user_role']).where({email: email})
+      const result = await knex('users').select(['id', 'user_email', 'user_password', 'user_name', 'user_role']).where({email: email})
 
       if(result.length > 0)
         return result[0]
@@ -117,6 +118,12 @@ class User{
     }else{
       return {status: false, err: 'O usuário não exite'}
     }
+  }
+
+  async cahngePassword(newPassword, id, token){
+    const hash = await bcrypt.hash(newPassword, 10)
+    await knex('users').update({user_password: hash}).where({id: id})
+    await PasswordToken.setUsed(token)
   }
 }
 

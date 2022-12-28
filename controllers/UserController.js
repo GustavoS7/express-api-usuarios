@@ -1,7 +1,10 @@
 const Validacao = require('../services/Validacao')
 const User = require("../models/User")
+const jwt = require('jsonwebtoken')
 const UserController = require('../models/PasswordToken')
 const PasswordToken = require('../models/PasswordToken')
+const secret = require('../config/secret.json')
+const bcrypt = require('bcrypt')
 
 class UserController{
 
@@ -93,10 +96,29 @@ class UserController{
 
     const isToken = await PasswordToken.validate(token)
 
-    if(isToken){
-      
+    if(isToken.status){
+      await User.changePassword(password, isToken.token.user_id, isToken.token.token)
+      return res.status(200).send('Senha alterada')
     }else{
-      res.status(406).send('Token Inválido')
+      return res.status(406).send('Token Inválido')
+    }
+  }
+
+  async login(req, res){
+    const {email, password} = req.body
+    const user = await User.findUserByEmail(email)
+
+    if(user){
+      const result = await bcrypt.compare(password, user.user_password)
+
+      if(result){
+        const token = jwt.sign({email: user.user_email, role: user.user_role}, secret.secret)
+        return res.status(200).send({token})
+      }else{
+        return res.status(406).send({err: 'Senha Incorreta'})
+      }
+    }else{
+      return res.status(400).send({err: 'Usuário não encontrado'})
     }
   }
 }
